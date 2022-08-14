@@ -149,23 +149,45 @@ var Engine = /*#__PURE__*/function () {
       this.status = 'running';
       _config__WEBPACK_IMPORTED_MODULE_4__["default"].resetScore();
       clearInterval(this.gameplay);
+      var pauseGameBtn = document.getElementById('pause-game');
+      pauseGameBtn.innerHTML = 'Pause';
+      var resultBoard = document.getElementById('result');
+      resultBoard.style.display = 'none';
     }
   }, {
     key: "pause",
     value: function pause() {
       this.status = 'pause';
       clearInterval(this.gameplay);
+      var pauseGameBtn = document.getElementById('pause-game');
+      pauseGameBtn.innerHTML = 'Play';
+    }
+  }, {
+    key: "end",
+    value: function end() {
+      this.status = 'end';
+      clearInterval(this.gameplay);
+      var pauseGameBtn = document.getElementById('pause-game');
+      pauseGameBtn.innerHTML = 'Re-play';
+      var resultBoard = document.getElementById('result');
+      resultBoard.style.display = 'flex';
+      resultBoard.innerHTML = "Your score: ".concat(_config__WEBPACK_IMPORTED_MODULE_4__["default"].score);
     }
   }, {
     key: "play",
     value: function play() {
+      if (this.status === 'end') this.reset();
       this.initGameObjects();
       this.status = 'running';
+      var resultBoard = document.getElementById('result');
+      resultBoard.style.display = 'none';
+      var pauseGameBtn = document.getElementById('pause-game');
+      pauseGameBtn.innerHTML = 'Pause';
     }
   }, {
     key: "coundown",
     value: function coundown() {
-      if (this.time <= 0) return this.pause();
+      if (this.time <= 0) return this.end();
       this.time--;
       var minute = Math.floor(this.time / 60);
       var second = this.time % 60;
@@ -201,6 +223,14 @@ var Engine = /*#__PURE__*/function () {
   }, {
     key: "createRandomBall",
     value: function createRandomBall() {
+      var availableObjects = this.gameObjects.filter(function (ball) {
+        return !ball.shotted;
+      });
+
+      if (availableObjects.length >= 3) {
+        return this.end();
+      }
+
       var radius = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.randomIntFromRange)(15, 40);
       var x = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.randomIntFromRange)(radius, this.canvas.width - radius);
       var y = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.randomIntFromRange)(radius, this.canvas.height - radius);
@@ -257,7 +287,7 @@ var Engine = /*#__PURE__*/function () {
         _this3.mouse.y = event.offsetY;
       });
       this.canvas.addEventListener('click', function (event) {
-        if (_this3.status === 'pause') return;
+        if (['pause', 'end'].includes(_this3.status)) return;
         var bullet = new _objects__WEBPACK_IMPORTED_MODULE_1__.Bullet({
           x: event.offsetX,
           y: event.offsetY,
@@ -525,7 +555,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_pnpm_css_loader_6_7_1_webpack_5_74_0_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_pnpm_css_loader_6_7_1_webpack_5_74_0_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "body {\r\n    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;\r\n}\r\n\r\ncanvas {\r\n    position: fixed;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\r\n    border: 1px solid black;\r\n}\r\n\r\n.board {\r\n    position: fixed;\r\n    top: 30px;\r\n    right: 30px;\r\n    z-index: 10;\r\n    display: flex;\r\n    justify-content: space-between;\r\n    gap: 16px;\r\n}\r\n\r\n#score {\r\n    border: 2px solid burlywood;\r\n    padding: 6px;\r\n}\r\n\r\n#countdown {\r\n    border: 2px solid burlywood;\r\n    padding: 6px;\r\n}", "",{"version":3,"sources":["webpack://./src/css/style.css"],"names":[],"mappings":"AAAA;IACI,wEAAwE;AAC5E;;AAEA;IACI,eAAe;IACf,QAAQ;IACR,SAAS;IACT,gCAAgC;IAChC,uBAAuB;AAC3B;;AAEA;IACI,eAAe;IACf,SAAS;IACT,WAAW;IACX,WAAW;IACX,aAAa;IACb,8BAA8B;IAC9B,SAAS;AACb;;AAEA;IACI,2BAA2B;IAC3B,YAAY;AAChB;;AAEA;IACI,2BAA2B;IAC3B,YAAY;AAChB","sourcesContent":["body {\r\n    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;\r\n}\r\n\r\ncanvas {\r\n    position: fixed;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\r\n    border: 1px solid black;\r\n}\r\n\r\n.board {\r\n    position: fixed;\r\n    top: 30px;\r\n    right: 30px;\r\n    z-index: 10;\r\n    display: flex;\r\n    justify-content: space-between;\r\n    gap: 16px;\r\n}\r\n\r\n#score {\r\n    border: 2px solid burlywood;\r\n    padding: 6px;\r\n}\r\n\r\n#countdown {\r\n    border: 2px solid burlywood;\r\n    padding: 6px;\r\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "body {\r\n    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;\r\n}\r\n\r\ncanvas {\r\n    position: fixed;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\r\n    border: 1px solid black;\r\n}\r\n\r\n.board {\r\n    position: fixed;\r\n    top: 30px;\r\n    right: 30px;\r\n    z-index: 100;\r\n    display: flex;\r\n    justify-content: space-between;\r\n    gap: 16px;\r\n}\r\n\r\n#score {\r\n    border: 2px solid burlywood;\r\n    padding: 6px;\r\n}\r\n\r\n#countdown {\r\n    border: 2px solid burlywood;\r\n    padding: 6px;\r\n}\r\n\r\n#result {\r\n    position: fixed;\r\n    z-index: 50;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n    background-color: rgba(0, 0, 0, 0.4);\r\n    color: white;\r\n    display: none;\r\n    justify-content: center;\r\n    align-items: center;\r\n    font-size: 38px;\r\n}", "",{"version":3,"sources":["webpack://./src/css/style.css"],"names":[],"mappings":"AAAA;IACI,wEAAwE;AAC5E;;AAEA;IACI,eAAe;IACf,QAAQ;IACR,SAAS;IACT,gCAAgC;IAChC,uBAAuB;AAC3B;;AAEA;IACI,eAAe;IACf,SAAS;IACT,WAAW;IACX,YAAY;IACZ,aAAa;IACb,8BAA8B;IAC9B,SAAS;AACb;;AAEA;IACI,2BAA2B;IAC3B,YAAY;AAChB;;AAEA;IACI,2BAA2B;IAC3B,YAAY;AAChB;;AAEA;IACI,eAAe;IACf,WAAW;IACX,MAAM;IACN,OAAO;IACP,WAAW;IACX,YAAY;IACZ,oCAAoC;IACpC,YAAY;IACZ,aAAa;IACb,uBAAuB;IACvB,mBAAmB;IACnB,eAAe;AACnB","sourcesContent":["body {\r\n    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;\r\n}\r\n\r\ncanvas {\r\n    position: fixed;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\r\n    border: 1px solid black;\r\n}\r\n\r\n.board {\r\n    position: fixed;\r\n    top: 30px;\r\n    right: 30px;\r\n    z-index: 100;\r\n    display: flex;\r\n    justify-content: space-between;\r\n    gap: 16px;\r\n}\r\n\r\n#score {\r\n    border: 2px solid burlywood;\r\n    padding: 6px;\r\n}\r\n\r\n#countdown {\r\n    border: 2px solid burlywood;\r\n    padding: 6px;\r\n}\r\n\r\n#result {\r\n    position: fixed;\r\n    z-index: 50;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n    background-color: rgba(0, 0, 0, 0.4);\r\n    color: white;\r\n    display: none;\r\n    justify-content: center;\r\n    align-items: center;\r\n    font-size: 38px;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1189,11 +1219,9 @@ window.onload = function () {
   var pauseGameBtn = document.getElementById('pause-game');
 
   pauseGameBtn.onclick = function () {
-    if (gameEngine.status === 'pause') {
-      pauseGameBtn.innerHTML = 'Pause';
+    if (['pause', 'end'].includes(gameEngine.status)) {
       gameEngine.play();
     } else {
-      pauseGameBtn.innerHTML = 'Play';
       gameEngine.pause();
     }
   };
